@@ -1,0 +1,19 @@
+apiVersion: apps/v1beta1 
+kind: Deployment 
+metadata:
+  name: jmsclient 
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jmsclient 
+    spec:
+      containers:
+      - name: jmsreceiver 
+        image: jms-client:latest 
+        imagePullPolicy: Never
+        command: ["tail"]
+        args: ["-f", "/dev/null"]
+        #command: ["/bin/sh"]
+        #args: ["-c", "while true; do echo hello; sleep 10;done"] 
