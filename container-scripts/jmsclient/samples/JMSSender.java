@@ -29,11 +29,11 @@ public class JMSSender
   private Session session;
   private MessageProducer producer;
   private Destination destination;
-  private String url = "t3://wls-subdomain:8011";
-  private String username;
-  private String password;
-  private String connectionFactoryName = "cf2";
-  private String destinationName = "dq2";
+  private String url = "t3://domain1-managed-server-2,domain1-managed-server-1:8001";
+  private String username="weblogic";
+  private String password="welcome1";
+  private String connectionFactoryName = "cf1";
+  private String destinationName = "dq1";
   private static int messageCount = 10;
 
   /**
@@ -45,7 +45,7 @@ public class JMSSender
   }
 
   private void send() throws JMSException {
-    System.out.println("Messages are sent to " + destinationName);
+    System.out.println(messageCount + " messages will be sent to " + destinationName);
     for (int i=0; i < messageCount; i++) {
       String text = "loopmsg-" + i;
       System.out.println("  Sending message: "+text);
@@ -114,13 +114,10 @@ public class JMSSender
         } else if (args[i].startsWith("-count")) {
           messageCount = new Integer(args[++i]);
 
-        } else if (args[i].equals("-help")) {
+        } else {
           System.out.println(usage);
           System.exit(0);
 
-        } else {
-          throw new Exception(EOL + "Unknown argument '" + args[i] + "'"
-              + EOL + usage);
         }
       }
     } catch (NumberFormatException e) {

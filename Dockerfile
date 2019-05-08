@@ -1,15 +1,13 @@
 
-FROM openjdk:8-jdk 
+FROM store/oracle/weblogic:12.2.1.3
 
-# -------------------------------------------------------------
-ENV CLASSPATH=/demo/lib/wlthint3client.jar:/demo/classes \
-    PATH=$PATH:/demo
-
+ENV CLIENT_DIR=/u01/demo/
+ENV CLASSPATH=/u01/oracle/wlserver/modules/features/wlst.wls.classpath.jar:$CLIENT_DIR/classes \
+    PATH=$PATH:$CLIENT_DIR
 # Copy scripts, lib and java files
 # --------------------------------
-RUN mkdir /demo /demo/classes
-COPY  container-scripts/ /demo/
-RUN cd /demo/jmsclient/samples && javac -d /demo/classes -g *.java
+RUN mkdir -p $CLIENT_DIR/classes
+COPY  container-scripts/ $CLIENT_DIR 
+RUN cd $CLIENT_DIR/jmsclient/samples && javac -d $CLIENT_DIR/classes -g *.java
 
-WORKDIR /demo 
-
+WORKDIR $CLIENT_DIR

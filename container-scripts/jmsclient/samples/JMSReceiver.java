@@ -42,12 +42,14 @@ public class JMSReceiver implements DestinationAvailabilityListener, ExceptionLi
   private Connection connection;
   private Destination destination;
   private RegistrationHandle handler;
-  private String url = "t3://wls-subdomain:8011";
-  private String username;
-  private String password;
-  private String connectionFactoryName = "cf2";
-  private String destinationName = "dq2";
-  private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
+  private String url = "t3://domain1-managed-server-2,domain1-managed-server-1:8001";
+  private String username="weblogic";
+  private String password="welcome1";
+  private String connectionFactoryName = "cf1";
+  private String destinationName = "dq1";
+  private static int maxCount = 10;  
+  private static int msgCount = 0;  
+private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
 
   /**
    * Closes JMS objects.
@@ -145,7 +147,7 @@ public class JMSReceiver implements DestinationAvailabilityListener, ExceptionLi
      qr.init();
      qr.initDAHelper();
     
-	 System.out.println("Press enter to exit...");
+     System.out.println("Press enter to exit...");
      // wait for enter key
      Scanner input = new Scanner(System.in);
      input.nextLine();
@@ -170,6 +172,11 @@ public class JMSReceiver implements DestinationAvailabilityListener, ExceptionLi
       }
 
       System.out.println("  Message received: " + msgText); 
+      msgCount ++;
+      if (msgCount >= maxCount) {
+        System.out.println(msgCount + " msgs have been received. Exit.");
+        System.exit(0);
+      }
     } catch (JMSException jmse) {
       System.err.println("An exception occurred: " + jmse.getMessage());
     }
