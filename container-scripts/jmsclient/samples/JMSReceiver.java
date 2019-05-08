@@ -32,23 +32,15 @@ import weblogic.jms.extensions.RegistrationHandle;
  */
 
 public class JMSReceiver implements DestinationAvailabilityListener, ExceptionListener, MessageListener{
-  //Defines the JNDI context factory.
-  private final static String JNDI_FACTORY="weblogic.jndi.WLInitialContextFactory";
   // Defines the JMS destination availability helper
   private final static JMSDestinationAvailabilityHelper JMSDAHELPER = JMSDestinationAvailabilityHelper.getInstance();
-  private static String EOL = System.getProperty("line.separator");
 
   private ConnectionFactory connectionFactory;
   private Connection connection;
   private Destination destination;
-  private RegistrationHandle handler;
-  private String url = "t3://domain1-managed-server-2,domain1-managed-server-1:8001";
-  private String username="weblogic";
-  private String password="welcome1";
-  private String connectionFactoryName = "cf1";
-  private String destinationName = "dq1";
-  private static int maxCount = 10;  
-  private static int msgCount = 0;  
+  private RegistrationHandle handler;  
+  private static int rcvCount = 0;  
+
 private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
 
   /**
@@ -73,9 +65,9 @@ private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
    * @exception JMSException if JMS fails to initialize due to internal error
    */
   private void init() throws NamingException, JMSException {
-    Context ctx = getInitialContext(url, username, password);
-    connectionFactory = (ConnectionFactory) ctx.lookup(connectionFactoryName);
-    destination = (Destination) ctx.lookup(destinationName);
+    Context ctx = getInitialContext(Const.url, Const.username, Const.password);
+    connectionFactory = (ConnectionFactory) ctx.lookup(Const.cfName);
+    destination = (Destination) ctx.lookup(Const.destName);
     connection = connectionFactory.createConnection();
     connection.setExceptionListener(this);
     connection.start();
@@ -88,52 +80,10 @@ private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
    * @exception NamingException if operation cannot be performed
    */
   private void initDAHelper() throws NamingException {
-    handler = JMSDAHELPER.register(getContextProps(url, username, password), destinationName, this);
+    handler = JMSDAHELPER.register(getContextProps(Const.url, Const.username, Const.password), Const.destName, this);
   }
 
-  private void parse(String [] args) throws Exception{
-    String usage =
-        EOL +
-        "  java samples.JMSReceiver" + EOL +
-        "    -url   URL                URL to contact server.  Default " + url + EOL +
-        "    -user  username           Weblogic Username.  Default anonymous user" + EOL +
-        "    -pass  password           Weblogic Password.  " + EOL +
-        "    -cf    connectionfactory  ConnectionFactory.  Default " + connectionFactoryName + EOL +
-        "    -dest  destination        Destination.  Default " + destinationName + EOL + EOL + 
-        "  Press the enter key to exit the program." + EOL + EOL
-        ;
-    int i=0;
-    try {
-      for (; i < args.length; i++) {
-        if (args[i].equals("-url")) {
-          url = args[++i];
-
-        } else if (args[i].startsWith("-user")) {
-          username = args[++i];
-
-        } else if (args[i].startsWith("-pass")) {
-          password = args[++i];
-
-        } else if (args[i].startsWith("-cf")) {
-          connectionFactoryName = args[++i];
-
-        } else if (args[i].startsWith("-dest")) {
-          destinationName = args[++i];
-
-        } else if (args[i].equals("-help")) {
-          System.out.println(usage);
-          System.exit(0);
-
-        } else {
-          throw new Exception(EOL + "Unknown argument '" + args[i] + "'"
-              + EOL + usage);
-        }
-      }
-    } catch (ArrayIndexOutOfBoundsException aio) {
-        throw new Exception(EOL + "Missing argument for '" + args[--i] + "'" 
-                            + EOL + usage); 
-    }
-  }
+  
   /**
    * main() method.
    *
@@ -143,7 +93,7 @@ private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
    public static void main(String[] args) throws Exception {
 
      JMSReceiver qr = new JMSReceiver();
-     qr.parse(args);
+     Const.parse(args, "java samples.JMSReceiver");
      qr.init();
      qr.initDAHelper();
     
@@ -155,7 +105,6 @@ private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
 
      qr.close();
    }
-
 
   /**
    * Message listener interface.
@@ -172,9 +121,9 @@ private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
       }
 
       System.out.println("  Message received: " + msgText); 
-      msgCount ++;
-      if (msgCount >= maxCount) {
-        System.out.println(msgCount + " msgs have been received. Exit.");
+      rcvCount ++;
+      if (rcvCount >= Const.msgCount) {
+        System.out.println(rcvCount + " msgs have been received. Exit.");
         System.exit(0);
       }
     } catch (JMSException jmse) {
@@ -264,13 +213,13 @@ private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
 
   private Hashtable<String, String> getContextProps(String url, String username, String password){
     Hashtable<String, String> contextProps = new Hashtable<String, String>();
-    contextProps.put(Context.INITIAL_CONTEXT_FACTORY, JNDI_FACTORY);
-    contextProps.put(Context.PROVIDER_URL, url);
+    contextProps.put(Context.INITIAL_CONTEXT_FACTORY, Const.JNDI_FACTORY);
+    contextProps.put(Context.PROVIDER_URL, Const.url);
     if (username != null) {
-      contextProps.put(Context.SECURITY_PRINCIPAL, username);
+      contextProps.put(Context.SECURITY_PRINCIPAL, Const.username);
     }
     if (password != null) {
-      contextProps.put(Context.SECURITY_CREDENTIALS, password);
+      contextProps.put(Context.SECURITY_CREDENTIALS, Const.password);
     }
     return contextProps;
   }

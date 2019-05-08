@@ -10,10 +10,9 @@ spec:
         app: jmsclient 
     spec:
       containers:
-      - name: jmsreceiver 
+      - command:
+        - sleep
+        - "3600"
+        name: jmsreceiver
         image: jms-client:1.0
         imagePullPolicy: Never
-#        command: ["tail"]
-#        args: ["-f", "/dev/null"]
-        command: ["/bin/sh"]
-        args: ["-c", "while true; do echo hello; sleep 10;done"] 
