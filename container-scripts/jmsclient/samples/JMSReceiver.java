@@ -97,12 +97,7 @@ private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
      qr.init();
      qr.initDAHelper();
     
-     System.out.println("Press enter to exit...");
-     // wait for enter key
-     Scanner input = new Scanner(System.in);
-     input.nextLine();
-     input.close();
-
+     Thread.currentThread().join();
      qr.close();
    }
 
@@ -126,8 +121,9 @@ private Hashtable<String, Session> receivers = new Hashtable<String, Session>();
         System.out.println(rcvCount + " msgs have been received. Exit.");
         System.exit(0);
       }
-    } catch (JMSException jmse) {
-      System.err.println("An exception occurred: " + jmse.getMessage());
+      Thread.sleep(Const.interval);
+    } catch (Exception e) {
+      System.err.println("An exception occurred: " + e.getMessage());
     }
   }
 

@@ -10,6 +10,7 @@ class Const {
   static String cfName = "cf1";
   static String destName = "dq1";
   static int msgCount = 10;
+  static int interval = 10;// in ms
  
   static void parse(String [] args, String cmd) throws Exception{
     String usage =
@@ -20,28 +21,32 @@ class Const {
         "    -pass  password           Password.  " + EOL +
         "    -cf    connectionfactory  ConnectionFactory.  Default " + cfName + EOL +
         "    -dest  destination        Destination.  Default " + destName + EOL +
-        "    -count msgCount       MessageCount for sending messages.  Default " + msgCount + EOL + EOL
+        "    -count msgCount           Total msg count for sending or receiving.  Default " + msgCount + EOL + EOL + 
+        "    -interval interval        Sleep interval (in ms)  between each msg sending or receiving.  Default " + interval + EOL + EOL
         ;
     
     int i=0;
     for (; i < args.length; i++) {
       if (args[i].equals("-url")) {
-        Const.url = args[++i];
+        url = args[++i];
 
       } else if (args[i].startsWith("-user")) {
-        Const.username = args[++i];
+        username = args[++i];
 
       } else if (args[i].startsWith("-pass")) {
-        Const.password = args[++i];
+        password = args[++i];
 
       } else if (args[i].startsWith("-cf")) {
-        Const.cfName = args[++i];
+        cfName = args[++i];
 
       } else if (args[i].startsWith("-dest")) {
-        Const.destName = args[++i];
+        destName = args[++i];
 
       } else if (args[i].startsWith("-count")) {
-        Const.msgCount = new Integer(args[++i]);
+        msgCount = new Integer(args[++i]);
+
+      } else if (args[i].startsWith("-interval")) {
+        interval = new Integer(args[++i]);
 
       } else {
         System.out.println(usage);

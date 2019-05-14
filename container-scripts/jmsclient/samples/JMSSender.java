@@ -35,7 +35,7 @@ public class JMSSender
     connection.close();
   }
 
-  private void send() throws JMSException {
+  private void send() throws Exception {
     System.out.println(Const.msgCount + " messages will be sent to " + Const.destName);
     for (int i=0; i < Const.msgCount; i++) {
       String text = "loopmsg-" + i;
@@ -43,6 +43,7 @@ public class JMSSender
       TextMessage message = session.createTextMessage();
       message.setText(text);
       producer.send(message);
+      Thread.sleep(Const.interval);
     }
   }
 
